@@ -1,35 +1,39 @@
-db:
-  image: mysql:latest
-  container_name: dev_db
-  expose:
-    - "3306"
-  ports:
-    - "3307:3306"
-  environment:
-    MYSQL_DATABASE: core-db
-    MYSQL_USER: test
-    MYSQL_PASSWORD: test123
-    MYSQL_ROOT_PASSWORD: admin123
-app:
-  image: linxlad/php7-fpm
-  container_name: dev_app
-  tty: true
-  ports:
-   - "6900:6900"
-  volumes:
-   - ./logs/php-fpm:/var/log/php-fpm
-   - ..:/var/www/html
-  links:
-   - db
-web:
-  tty: true
-  image: linxlad/nginx
-  container_name: dev_web
-  ports:
-   - "80:80"
-  volumes:
-   - ./conf/nginx:/etc/nginx/conf.d
-   - ./logs/nginx:/var/log/nginx
-   - ..:/var/www/html
-  links:
-   - app
+version: '2'
+services:
+  db:
+    image: mysql:latest
+    container_name: dev_db
+    expose:
+      - "3306"
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: core-db
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test123
+      MYSQL_ROOT_PASSWORD: admin123
+  app:
+    image: linxlad/php7-fpm
+    container_name: dev_app
+    tty: true
+    ports:
+     - "6900:6900"
+    volumes:
+     - ./logs/php-fpm:/var/log/php-fpm
+     - ..:/var/www/html
+    links:
+     - db
+  web:
+    tty: true
+    image: linxlad/nginx
+    container_name: dev_web
+    ports:
+     - "80:80"
+    volumes:
+     - ./conf/nginx:/etc/nginx/conf.d
+     - ./logs/nginx:/var/log/nginx
+     - ..:/var/www/html
+    links:
+      - app
+    depends_on:
+      - app
